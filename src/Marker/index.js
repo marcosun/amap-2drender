@@ -156,7 +156,7 @@ class Marker {
       const clickedMarkers = this.canvasMarker.findByPosition(event.pixel);
 
       if (clickedMarkers.length !== 0) {
-        this.onClick(clickedMarkers);
+        this.onClick(event, clickedMarkers);
       }
     }
   }
@@ -169,7 +169,7 @@ class Marker {
       const clickedMarkers = this.canvasMarker.findByPosition(event.pixel);
 
       if (clickedMarkers.length !== 0) {
-        this.onDoubleClick(clickedMarkers);
+        this.onDoubleClick(event, clickedMarkers);
       }
     }
   }
@@ -190,14 +190,14 @@ class Marker {
          * An increasing marker length is a concrete signal of a mouse over event.
          */
         if (typeof this.onMouseOver === 'function') {
-          this.onMouseOver(markers);
+          this.onMouseOver(event, markers);
         }
       } else if (markers.length < this.hoverMarkers.length) {
         /**
          * A dropping marker length is a concrete signal of a mouse out event.
          */
         if (typeof this.onMouseOut === 'function') {
-          this.onMouseOut(markers);
+          this.onMouseOut(event, markers);
         }
       } else if (!isEqual(markers, this.hoverMarkers)) {
         /**
@@ -210,10 +210,10 @@ class Marker {
          * marker being changed.
          */
         if (typeof this.onMouseOut === 'function') {
-          this.onMouseOut(markers);
+          this.onMouseOut(event, markers);
         }
         if (typeof this.onMouseOver === 'function') {
-          this.onMouseOver(markers);
+          this.onMouseOver(event, markers);
         }
       }
 
@@ -368,7 +368,8 @@ Marker.propTypes = {
   /**
    * Callback fired when at least a marker is clicked.
    * Signature:
-   * (markers) => void
+   * (event, markers) => void
+   * event: AMap MapsEvent object.
    * markers: A list of markers that is clicked. Markers with the earlier position in the data array
    * are positioned later in the click callback. This is because markers appear later in the data
    * array are drawn later and has a higher priority when clicked.
@@ -377,7 +378,8 @@ Marker.propTypes = {
   /**
    * Double click event fired immediately after click event.
    * Signature:
-   * (markers) => void
+   * (event, markers) => void
+   * event: AMap MapsEvent object.
    * markers: A list of markers that is clicked. Markers with the earlier position in the data array
    * are positioned later in the click callback. This is because markers appear later in the data
    * array are drawn later and has a higher priority when clicked.
@@ -387,7 +389,8 @@ Marker.propTypes = {
    * Callback fired when pointer leaves the element or one of its child elements (even if
    * the pointer is still within the element).
    * Signature:
-   * (markers) => void
+   * (event, markers) => void
+   * event: AMap MapsEvent object.
    * markers: A list of markers that pointer overs. Markers with the earlier position in the data
    * array are positioned later in the mouse over callback. This is because markers appear later
    * in the data array are drawn later and has a higher priority when mouse over.
@@ -397,7 +400,8 @@ Marker.propTypes = {
    * Callback fired when pointer moves onto the element or one of its child elements (even if
    * the pointer is still within the element).
    * Signature:
-   * (markers) => void
+   * (event, markers) => void
+   * event: AMap MapsEvent object.
    * markers: A list of markers that pointer overs. Markers with the earlier position in the data
    * array are positioned later in the mouse over callback. This is because markers appear later
    * in the data array are drawn later and has a higher priority when mouse over.
