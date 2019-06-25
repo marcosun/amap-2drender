@@ -128,7 +128,7 @@ class Grid {
       const clickedGrids = this.canvasGrid.findByPosition(event.pixel);
 
       if (clickedGrids.length !== 0) {
-        this.onClick(clickedGrids);
+        this.onClick(event, clickedGrids);
       }
     }
   }
@@ -212,7 +212,8 @@ Grid.propTypes = {
   /**
    * Callback fired when at least a grid is clicked.
    * Signature:
-   * (grids) => void
+   * (event, grids) => void
+   * event: AMap MapsEvent object.
    * grids: A list of grids that is clicked. Grids with the earlier position in the data array
    * are positioned later in the click callback. This is because grids appear later in the data
    * array are drawn later and has a higher priority when clicked.
