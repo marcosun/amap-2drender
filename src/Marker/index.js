@@ -122,6 +122,11 @@ class Marker {
      */
     this.hoverMarkers = [];
     /**
+     * Its functionality is very similar to hoverMarkers, although it is used to determine
+     * cursor style.
+     */
+    this.hoverStyleMarkers = [];
+    /**
      * Memorise width and height so that we understand if width or height is updated in lifetime.
      * Change canvas size only if its shape changes.
      */
@@ -172,7 +177,7 @@ class Marker {
   /**
    * Propagate mouse over and mouse out events to parent module.
    */
-  handleMouseMove(event) {
+  handleMouseHover(event) {
     /**
      * Finding hovering markers is a time consuming task. Run the task only if either mouse over
      * or mouse out event is hooked.
@@ -214,6 +219,52 @@ class Marker {
 
       this.hoverMarkers = markers;
     }
+  }
+
+  /**
+   * Change cursor style if mouse events are being watched.
+   */
+  handleMouseHoverStyle(event) {
+    const { map } = this.props;
+
+    /**
+     * Finding hovering markers is a time consuming task. Run the task only if at least one of mouse
+     * events is hooked.
+     */
+    if (typeof this.onClick === 'function'
+      || typeof this.onDoubleClick === 'function'
+      || typeof this.onMouseOver === 'function'
+      || typeof this.onMouseOut === 'function'
+    ) {
+      const markers = this.canvasMarker.findByPosition(event.pixel);
+
+      /**
+       * Change cursor to pointer if mouse moves on at least one marker.
+       */
+      if (this.hoverStyleMarkers.length === 0 && markers.length > 0) {
+        map.setDefaultCursor('pointer');
+      }
+
+      /**
+       * Change cursor to AMap default style if mouse leaves all markers.
+       */
+      if (this.hoverStyleMarkers.length > 0 && markers.length === 0) {
+        map.setDefaultCursor();
+      }
+
+      this.hoverStyleMarkers = markers;
+    }
+  }
+
+  handleMouseMove(event) {
+    /**
+     * Propagate mouse over and mouse out events to parent module.
+     */
+    this.handleMouseHover(event);
+    /**
+     * Change cursor style if mouse events are being watched.
+     */
+    this.handleMouseHoverStyle(event);
   }
 
   /**
