@@ -3,9 +3,9 @@
 
 
 "2drender@^1.0.0-rc.1":
-  version "1.0.0-rc.2"
-  resolved "https://registry.yarnpkg.com/2drender/-/2drender-1.0.0-rc.2.tgz#470d8445bd422de82ba706c6dbe21ada033a33ba"
-  integrity sha512-shwaOOpIb8SDtGY+aCmAtOlBAY/5Pk1To62ymq6D5QTDkr7lqqOxgFObGeLgsTZN03HiNKa93YlR2P9rt85xAw==
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/2drender/-/2drender-1.0.0.tgz#a466edfc04bd8e19c5644a7b18099773780d7b79"
+  integrity sha512-gDjjiJPSuXVWRwmV0YoWNnWmey6pfE1fmf+fYT13j/d5ilnX2KafCcV1njXFwrGDHf1vQrYuR5F+yeWi0Gho/w==
   dependencies:
     mathjs "^6.0.2"
     prop-types "^15.7.2"
