@@ -225,8 +225,6 @@ class Marker {
    * Change cursor style if mouse events are being watched.
    */
   handleMouseHoverStyle(event) {
-    const { map } = this.props;
-
     /**
      * Finding hovering markers is a time consuming task. Run the task only if at least one of mouse
      * events is hooked.
@@ -242,14 +240,14 @@ class Marker {
        * Change cursor to pointer if mouse moves on at least one marker.
        */
       if (this.hoverStyleMarkers.length === 0 && markers.length > 0) {
-        map.setDefaultCursor('pointer');
+        this.map.setDefaultCursor('pointer');
       }
 
       /**
        * Change cursor to AMap default style if mouse leaves all markers.
        */
       if (this.hoverStyleMarkers.length > 0 && markers.length === 0) {
-        map.setDefaultCursor();
+        this.map.setDefaultCursor();
       }
 
       this.hoverStyleMarkers = markers;
