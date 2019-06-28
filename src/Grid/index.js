@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { isEqual } from 'lodash';
 import { Grid as CanvasGrid } from '2drender';
 
 class Grid {
@@ -27,6 +28,8 @@ class Grid {
       height = 0,
       map,
       onClick,
+      onMouseOut,
+      onMouseOver,
       opacity = 1,
       width = 0,
       zIndex = 12,
@@ -42,6 +45,7 @@ class Grid {
      * Hook map click event.
      */
     this.map.on('click', this.handleClick, this);
+    this.map.on('mousemove', this.handleMouseMove, this);
     /**
      * Create canvas.
      */
@@ -54,6 +58,8 @@ class Grid {
       data,
       height,
       onClick,
+      onMouseOut,
+      onMouseOver,
       width,
     });
     this.canvasGrid = new CanvasGrid();
@@ -93,11 +99,25 @@ class Grid {
       data = [],
       height = 0,
       onClick,
+      onMouseOut,
+      onMouseOver,
       width = 0,
     } = props;
 
     this.data = data;
     this.onClick = onClick;
+    this.onMouseOut = onMouseOut;
+    this.onMouseOver = onMouseOver;
+    /**
+     * Save grids that pointer is hovering. Compare with previous hover grids to understand
+     * whether it is a mouse over or mouse out event.
+     */
+    this.hoverGrids = [];
+    /**
+     * Its functionality is very similar to hoverGrids, although it is used to determine
+     * cursor style.
+     */
+    this.hoverStyleGrids = [];
     /**
      * Memorise width and height so that we understand if width or height is updated in lifetime.
      * Change canvas size only if its shape changes.
@@ -131,6 +151,97 @@ class Grid {
         this.onClick(event, clickedGrids);
       }
     }
+  }
+
+  /**
+   * Propagate mouse over and mouse out events to parent module.
+   */
+  handleMouseHover(event) {
+    /**
+     * Finding hovering grids is a time consuming task. Run the task only if either mouse over
+     * or mouse out event is hooked.
+     */
+    if (typeof this.onMouseOver === 'function' || typeof this.onMouseOut === 'function') {
+      const grids = this.canvasGrid.findByPosition(event.pixel);
+
+      if (grids.length > this.hoverGrids.length) {
+        /**
+         * An increasing grid length is a concrete signal of a mouse over event.
+         */
+        if (typeof this.onMouseOver === 'function') {
+          this.onMouseOver(event, grids);
+        }
+      } else if (grids.length < this.hoverGrids.length) {
+        /**
+         * A dropping grid length is a concrete signal of a mouse out event.
+         */
+        if (typeof this.onMouseOut === 'function') {
+          this.onMouseOut(event, grids);
+        }
+      } else if (!isEqual(grids, this.hoverGrids)) {
+        /**
+         * If grid length does not change, there could be two reasons:
+         * 1. pointer is not moving out of any grids.
+         * 2. pointer is moving to other grids however the number of grids does not change.
+         * If grids pass deep equality check, it means point is not moving out of any grids,
+         * fails otherwise.
+         * For scenario two, mouse out event is fired before mouse over event to notify the hovering
+         * grid being changed.
+         */
+        if (typeof this.onMouseOut === 'function') {
+          this.onMouseOut(event, grids);
+        }
+        if (typeof this.onMouseOver === 'function') {
+          this.onMouseOver(event, grids);
+        }
+      }
+
+      this.hoverGrids = grids;
+    }
+  }
+
+  /**
+   * Change cursor style if mouse events are being watched.
+   */
+  handleMouseHoverStyle(event) {
+    /**
+     * Finding hovering grids is a time consuming task. Run the task only if at least one of mouse
+     * events is hooked.
+     */
+    if (typeof this.onClick === 'function'
+      || typeof this.onDoubleClick === 'function'
+      || typeof this.onMouseOver === 'function'
+      || typeof this.onMouseOut === 'function'
+    ) {
+      const grids = this.canvasGrid.findByPosition(event.pixel);
+
+      /**
+       * Change cursor to pointer if mouse moves on at least one grid.
+       */
+      if (this.hoverStyleGrids.length === 0 && grids.length > 0) {
+        this.map.setDefaultCursor('pointer');
+      }
+
+      /**
+       * Change cursor to AMap default style if mouse leaves all grids.
+       */
+      if (this.hoverStyleGrids.length > 0 && grids.length === 0) {
+        this.map.setDefaultCursor();
+      }
+
+      this.hoverStyleGrids = grids;
+    }
+  }
+
+  handleMouseMove(event) {
+    /**
+     * Propagate mouse over and mouse out events to parent module.
+     */
+    this.handleMouseHover(event);
+    /**
+     * Change cursor style if mouse events are being watched.
+     */
+    this.handleMouseHoverStyle(event);
   }
 
   /**
@@ -219,6 +330,28 @@ Grid.propTypes = {
    * array are drawn later and has a higher priority when clicked.
    */
   onClick: PropTypes.func,
+  /**
+   * Callback fired when pointer leaves the element or one of its child elements (even if
+   * the pointer is still within the element).
+   * Signature:
+   * (event, grids) => void
+   * event: AMap MapsEvent object.
+   * grids: A list of grids that pointer overs. Grids with the earlier position in the data
+   * array are positioned later in the mouse over callback. This is because grids appear later
+   * in the data array are drawn later and has a higher priority when mouse over.
+   */
+  onMouseOut: PropTypes.func,
+  /**
+   * Callback fired when pointer moves onto the element or one of its child elements (even if
+   * the pointer is still within the element).
+   * Signature:
+   * (event, grids) => void
+   * event: AMap MapsEvent object.
+   * grids: A list of grids that pointer overs. Grids with the earlier position in the data
+   * array are positioned later in the mouse over callback. This is because grids appear later
+   * in the data array are drawn later and has a higher priority when mouse over.
+   */
+  onMouseOver: PropTypes.func,
   /**
    * Custom layer opacity.
    * Default 1.
