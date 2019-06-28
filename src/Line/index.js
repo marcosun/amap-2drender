@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { isEqual } from 'lodash';
 import { Line as CanvasLine } from '2drender';
 
 class Line {
@@ -41,6 +42,9 @@ class Line {
       data = [],
       height = 0,
       map,
+      onClick,
+      onMouseOut,
+      onMouseOver,
       opacity = 1,
       width = 0,
       zIndex = 12,
@@ -53,6 +57,11 @@ class Line {
      */
     this.map = map;
     /**
+     * Hook map click event.
+     */
+    this.map.on('click', this.handleClick, this);
+    this.map.on('mousemove', this.handleMouseMove, this);
+    /**
      * Create canvas.
      */
     this.canvas = window.document.createElement('canvas');
@@ -63,6 +72,9 @@ class Line {
     this.config({
       data,
       height,
+      onClick,
+      onMouseOut,
+      onMouseOver,
       width,
     });
     this.canvasLine = new CanvasLine();
@@ -101,10 +113,26 @@ class Line {
     const {
       data = [],
       height = 0,
+      onClick,
+      onMouseOut,
+      onMouseOver,
       width = 0,
     } = props;
 
     this.data = data;
+    this.onClick = onClick;
+    this.onMouseOut = onMouseOut;
+    this.onMouseOver = onMouseOver;
+    /**
+     * Save lines that pointer is hovering. Compare with previous hover lines to understand
+     * whether it is a mouse over or mouse out event.
+     */
+    this.hoverLines = [];
+    /**
+     * Its functionality is very similar to hoverLines, although it is used to determine
+     * cursor style.
+     */
+    this.hoverStyleLines = [];
     /**
      * Memorise width and height so that we understand if width or height is updated in lifetime.
      * Change canvas size only if its shape changes.
@@ -125,6 +153,110 @@ class Line {
      * In case of custom layer is destroyed before AMap.CustomLayer has loaded.
      */
     if (this.customLayer) this.customLayer.setMap(null);
+  }
+
+  /**
+   * Propagate click event to parent module if onClick event handler is defined.
+   */
+  handleClick(event) {
+    if (typeof this.onClick === 'function') {
+      const clickedLines = this.canvasLine.findByPosition(event.pixel);
+
+      if (clickedLines.length !== 0) {
+        this.onClick(event, clickedLines);
+      }
+    }
+  }
+
+  /**
+   * Propagate mouse over and mouse out events to parent module.
+   */
+  handleMouseHover(event) {
+    /**
+     * Finding hovering lines is a time consuming task. Run the task only if either mouse over
+     * or mouse out event is hooked.
+     */
+    if (typeof this.onMouseOver === 'function' || typeof this.onMouseOut === 'function') {
+      const lines = this.canvasLine.findByPosition(event.pixel);
+
+      if (lines.length > this.hoverLines.length) {
+        /**
+         * An increasing line length is a concrete signal of a mouse over event.
+         */
+        if (typeof this.onMouseOver === 'function') {
+          this.onMouseOver(event, lines);
+        }
+      } else if (lines.length < this.hoverLines.length) {
+        /**
+         * A dropping line length is a concrete signal of a mouse out event.
+         */
+        if (typeof this.onMouseOut === 'function') {
+          this.onMouseOut(event, lines);
+        }
+      } else if (!isEqual(lines, this.hoverLines)) {
+        /**
+         * If line length does not change, there could be two reasons:
+         * 1. pointer is not moving out of any lines.
+         * 2. pointer is moving to other lines however the number of lines does not change.
+         * If lines pass deep equality check, it means point is not moving out of any lines,
+         * fails otherwise.
+         * For scenario two, mouse out event is fired before mouse over event to notify the hovering
+         * line being changed.
+         */
+        if (typeof this.onMouseOut === 'function') {
+          this.onMouseOut(event, lines);
+        }
+        if (typeof this.onMouseOver === 'function') {
+          this.onMouseOver(event, lines);
+        }
+      }
+
+      this.hoverLines = lines;
+    }
+  }
+
+  /**
+   * Change cursor style if mouse events are being watched.
+   */
+  handleMouseHoverStyle(event) {
+    /**
+     * Finding hovering lines is a time consuming task. Run the task only if at least one of mouse
+     * events is hooked.
+     */
+    if (typeof this.onClick === 'function'
+      || typeof this.onDoubleClick === 'function'
+      || typeof this.onMouseOver === 'function'
+      || typeof this.onMouseOut === 'function'
+    ) {
+      const lines = this.canvasLine.findByPosition(event.pixel);
+
+      /**
+       * Change cursor to pointer if mouse moves on at least one line.
+       */
+      if (this.hoverStyleLines.length === 0 && lines.length > 0) {
+        this.map.setDefaultCursor('pointer');
+      }
+
+      /**
+       * Change cursor to AMap default style if mouse leaves all lines.
+       */
+      if (this.hoverStyleLines.length > 0 && lines.length === 0) {
+        this.map.setDefaultCursor();
+      }
+
+      this.hoverStyleLines = lines;
+    }
+  }
+
+  handleMouseMove(event) {
+    /**
+     * Propagate mouse over and mouse out events to parent module.
+     */
+    this.handleMouseHover(event);
+    /**
+     * Change cursor style if mouse events are being watched.
+     */
+    this.handleMouseHoverStyle(event);
   }
 
   /**
@@ -189,6 +321,38 @@ Line.propTypes = {
    * AMap instance.
    */
   map: PropTypes.object.isRequired,
+  /**
+   * Callback fired when at least a polyline is clicked.
+   * Signature:
+   * (event, lines) => void
+   * event: AMap MapsEvent object.
+   * lines: A list of lines that is clicked. Lines with the earlier position in the data array
+   * are positioned later in the click callback. This is because lines appear later in the data
+   * array are drawn later and has a higher priority when clicked.
+   */
+  onClick: PropTypes.func,
+  /**
+   * Callback fired when pointer leaves the element or one of its child elements (even if
+   * the pointer is still within the element).
+   * Signature:
+   * (event, lines) => void
+   * event: AMap MapsEvent object.
+   * lines: A list of lines that pointer overs. Lines with the earlier position in the data
+   * array are positioned later in the mouse over callback. This is because lines appear later
+   * in the data array are drawn later and has a higher priority when mouse over.
+   */
+  onMouseOut: PropTypes.func,
+  /**
+   * Callback fired when pointer moves onto the element or one of its child elements (even if
+   * the pointer is still within the element).
+   * Signature:
+   * (event, lines) => void
+   * event: AMap MapsEvent object.
+   * lines: A list of lines that pointer overs. Lines with the earlier position in the data
+   * array are positioned later in the mouse over callback. This is because lines appear later
+   * in the data array are drawn later and has a higher priority when mouse over.
+   */
+  onMouseOver: PropTypes.func,
   /**
    * Custom layer opacity.
    * Default 1.
