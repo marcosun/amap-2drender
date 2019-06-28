@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"2drender@^1.0.0-rc.1":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/2drender/-/2drender-1.0.0.tgz#a466edfc04bd8e19c5644a7b18099773780d7b79"
-  integrity sha512-gDjjiJPSuXVWRwmV0YoWNnWmey6pfE1fmf+fYT13j/d5ilnX2KafCcV1njXFwrGDHf1vQrYuR5F+yeWi0Gho/w==
+"2drender@^1.1.0-alpha.1":
+  version "1.1.0-alpha.1"
+  resolved "https://registry.yarnpkg.com/2drender/-/2drender-1.1.0-alpha.1.tgz#275802485552ebaaa6ac31cae6d33d890d4b0ffa"
+  integrity sha512-sJxm+iUXxzAUEO3HUdNPPFII8ERxGhHPnDarUu/PsMaLmz5ExcRjrWS3D2+BA/PwLeWeULOpnqr8i1oXGsDpsg==
   dependencies:
     mathjs "^6.0.2"
     prop-types "^15.7.2"
