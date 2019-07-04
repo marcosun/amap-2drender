@@ -138,6 +138,12 @@ class Grid {
      * In case of custom layer is destroyed before AMap.CustomLayer has loaded.
      */
     if (this.customLayer) this.customLayer.setMap(null);
+    /**
+     * Remove event hooks.
+     * https://github.com/marcosun/amap-2drender/issues/1
+     */
+    this.map.off('click', this.handleClick, this);
+    this.map.off('mousemove', this.handleMouseMove, this);
   }
 
   /**
