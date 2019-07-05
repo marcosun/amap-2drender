@@ -95,16 +95,15 @@ class Line {
        * Assign custom layer's render function so that this function will be called every time
        * canvas needs update.
        */
-      this.customLayer.render = this.render.bind(this);
+      this.customLayer.render = this.internalRender.bind(this);
     });
   }
 
   /**
    * All properties that can be changed during lifetime should be handled by this function.
    * Update ctx and dataset.
-   * canvasLine config function is expected to be called every time canvas need update.
-   * This is why I don't call canvasLine config function here,
-   * instead update private properties of this moudle only.
+   * canvasLine config function is expected to be called every time user changes how canvas
+   * looks like.
    */
   config(props) {
     /**
@@ -268,7 +267,17 @@ class Line {
   /**
    * Render function will be called every time canvas needs update (such as after drag and zoom).
    */
-  render() {
+  render(props) {
+    this.config(props);
+    this.internalRender();
+  }
+
+  /**
+   * Render function will be called every time canvas needs update (such as after drag and zoom).
+   * This render function is expected to be called internally only. User is required to use render
+   * function instead.
+   */
+  internalRender() {
     /**
      * Clear canvas.
      */
