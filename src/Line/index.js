@@ -266,14 +266,6 @@ class Line {
 
   /**
    * Render function will be called every time canvas needs update (such as after drag and zoom).
-   */
-  render(props) {
-    this.config(props);
-    this.internalRender();
-  }
-
-  /**
-   * Render function will be called every time canvas needs update (such as after drag and zoom).
    * This render function is expected to be called internally only. User is required to use render
    * function instead.
    */
@@ -298,6 +290,14 @@ class Line {
      * Call canvas line render function to draw polylines.
      */
     this.canvasLine.render();
+  }
+
+  /**
+   * Render function will be called every time canvas needs update (such as after drag and zoom).
+   */
+  render(props) {
+    this.config(props);
+    this.internalRender();
   }
 }
 
