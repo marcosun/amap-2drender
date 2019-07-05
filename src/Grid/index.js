@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 import { Grid as CanvasGrid } from '2drender';
+import isNullVoid from '../utils/isNullVoid';
 
 class Grid {
   /**
@@ -80,21 +81,15 @@ class Grid {
        * Assign custom layer's render function so that this function will be called every time
        * canvas needs update.
        */
-      this.customLayer.render = this.render.bind(this);
+      this.customLayer.render = this.internalRender.bind(this);
     });
   }
 
   /**
    * All properties that can be changed during lifetime should be handled by this function.
    * Update ctx, dataset, and event callbacks.
-   * canvasGrid config function is expected to be called every time canvas need update.
-   * This is why I don't call canvasGrid config function here,
-   * instead update private properties of this moudle only.
    */
   config(props) {
-    /**
-     * This method is used both internally and externally, therefore, we must assign default values.
-     */
     const {
       data = [],
       height = 0,
@@ -252,8 +247,10 @@ class Grid {
 
   /**
    * Render function will be called every time canvas needs update (such as after drag and zoom).
+   * This render function is expected to be called internally only. User is required to use render
+   * function instead.
    */
-  render() {
+  internalRender() {
     /**
      * Clear canvas.
      */
@@ -291,6 +288,17 @@ class Grid {
      * Call canvas grid render function to draw grids.
      */
     this.canvasGrid.render();
+  }
+
+  /**
+   * This is the function user calls to update how canvas looks like.
+   * If configuration properties are not provided, canvas will perform a refresh.
+   */
+  render(props) {
+    if (!isNullVoid(props)) {
+      this.config(props);
+    }
+    this.internalRender();
   }
 }
 
