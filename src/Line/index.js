@@ -262,8 +262,8 @@ class Line {
 
   /**
    * Render function will be called every time canvas needs update (such as after drag and zoom).
-   * This render function is expected to be called internally only. User is required to use render
-   * function instead.
+   * This internal render function is expected to be called internally only.
+   * User should use render function rather than internal render.
    */
   internalRender() {
     /**
