@@ -101,7 +101,7 @@ class Line {
 
   /**
    * All properties that can be changed during lifetime should be handled by this function.
-   * Update ctx and dataset.
+   * Update ctx, dataset, and event callbacks.
    * canvasLine config function is expected to be called every time user changes how canvas
    * looks like.
    */
