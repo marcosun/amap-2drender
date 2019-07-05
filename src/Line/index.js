@@ -149,7 +149,7 @@ class Line {
       /**
        * Set CSS value to scale down by dpr value to make image sharp.
        */
-      this.canvas.style.height = height;
+      this.canvas.style.height = `${height}px`;
     }
     if (width * this.dpr !== this.canvas.width) {
       /**
@@ -159,7 +159,7 @@ class Line {
       /**
        * Set CSS value to scale down by dpr value to make image sharp.
        */
-      this.canvas.style.width = width;
+      this.canvas.style.width = `${width}px`;
     }
   }
 
