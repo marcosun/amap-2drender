@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 import { Line as CanvasLine } from '2drender';
+import isNullVoid from '../utils/isNullVoid';
 
 class Line {
   /**
@@ -106,9 +107,6 @@ class Line {
    * looks like.
    */
   config(props) {
-    /**
-     * This method is used both internally and externally, therefore, we must assign default values.
-     */
     const {
       data = [],
       height = 0,
@@ -293,10 +291,13 @@ class Line {
   }
 
   /**
-   * Render function will be called every time canvas needs update (such as after drag and zoom).
+   * This is the function user calls to update how canvas looks like.
+   * If configuration properties are not provided, canvas will perform a refresh.
    */
   render(props) {
-    this.config(props);
+    if (!isNullVoid(props)) {
+      this.config(props);
+    }
     this.internalRender();
   }
 }
