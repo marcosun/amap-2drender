@@ -307,7 +307,12 @@ class Grid {
           ...grid,
           /**
            * Get height and width from canvas coordinates.
-           * Since canvas is scaled, all images on that canvas should scale accordingly.
+           * 2drender renders each grid on its own offscreen canvas before calling putImageData to
+           * copy that image to the main canvas. Due to the fact that putImageData is immutable to
+           * canvas scale, I have to manually scale grid size to make images sharper on high DPR
+           * devices.
+           * This is a bit odd because 2drender's implementation details affect the use case.
+           * Consider to implement a better method.
            */
           height: (y1 - y0) * this.dpr,
           origin: [x0 * this.dpr, y0 * this.dpr],
