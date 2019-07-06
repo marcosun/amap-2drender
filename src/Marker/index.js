@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { isEqual } from 'lodash';
 import { Marker as CanvasMarker } from '2drender';
+import getDPR from '../utils/getDPR';
 import isNullVoid from '../utils/isNullVoid';
 
 class Marker {
@@ -37,6 +38,14 @@ class Marker {
       zIndex = 12,
       zooms = [3, 18],
     } = props;
+
+    /**
+     * Get device pixel ratio. It is critical to support RETINA devices.
+     * DPR shall not change during lifetime, which means dragging browser from lower DPR device to
+     * higher DPR device results blurred images. In this case, user must perform refresh in higher
+     * DPR devices.
+     */
+    this.dpr = getDPR();
 
     /**
      * Map instance cannot be changed during lifetime, therefore, it is not memorised by config
@@ -122,11 +131,25 @@ class Marker {
      * Memorise width and height so that we understand if width or height is updated in lifetime.
      * Change canvas size only if its shape changes.
      */
-    if (height !== this.height) {
-      this.canvas.height = height;
+    if (height * this.dpr !== this.canvas.height) {
+      /**
+       * For high DPR devices, canvas size is scaled by dpr value.
+       */
+      this.canvas.height = height * this.dpr;
+      /**
+       * Set CSS value to scale down by dpr value to make image sharp.
+       */
+      this.canvas.style.height = `${height}px`;
     }
-    if (width !== this.width) {
-      this.canvas.width = width;
+    if (width * this.dpr !== this.canvas.width) {
+      /**
+       * For high DPR devices, canvas size is scaled by dpr value.
+       */
+      this.canvas.width = width * this.dpr;
+      /**
+       * Set CSS value to scale down by dpr value to make image sharp.
+       */
+      this.canvas.style.width = `${width}px`;
     }
   }
 
@@ -274,6 +297,13 @@ class Marker {
      * Clear canvas.
      */
     this.canvas.width = this.canvas.width;
+    /**
+     * 2K device has dpr 2. Canvas is painted on a double size area. With canvas CSS scales down
+     * by half shall we have sharp images.
+     * Change canvas width restores canvas scale. Always set the correct scale to fit current
+     * device.
+     */
+    this.ctx.scale(this.dpr, this.dpr);
     this.canvasMarker.config({
       ctx: this.ctx,
       /**
@@ -294,7 +324,6 @@ class Marker {
            */
           position = Marker.coordinateTransformation(this.map, location);
         }
-
 
         return {
           /**
