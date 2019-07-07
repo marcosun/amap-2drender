@@ -184,7 +184,14 @@ class Line {
    */
   handleClick(event) {
     if (typeof this.onClick === 'function') {
-      const clickedLines = this.canvasLine.findByPosition(event.pixel);
+      /**
+       * Canvas may scale to make image sharper in high DPR devices. Therefore, when finding lines
+       * by mouse events, mouse pointer position should scale according to DPR ratio.
+       */
+      const clickedLines = this.canvasLine.findByPosition({
+        x: event.pixel.x * this.dpr,
+        y: event.pixel.y * this.dpr,
+      });
 
       if (clickedLines.length !== 0) {
         this.onClick(event, clickedLines);
@@ -201,7 +208,14 @@ class Line {
      * or mouse out event is hooked.
      */
     if (typeof this.onMouseOver === 'function' || typeof this.onMouseOut === 'function') {
-      const lines = this.canvasLine.findByPosition(event.pixel);
+      /**
+       * Canvas may scale to make image sharper in high DPR devices. Therefore, when finding lines
+       * by mouse events, mouse pointer position should scale according to DPR ratio.
+       */
+      const lines = this.canvasLine.findByPosition({
+        x: event.pixel.x * this.dpr,
+        y: event.pixel.y * this.dpr,
+      });
 
       if (lines.length > this.hoverLines.length) {
         /**
@@ -252,7 +266,14 @@ class Line {
       || typeof this.onMouseOver === 'function'
       || typeof this.onMouseOut === 'function'
     ) {
-      const lines = this.canvasLine.findByPosition(event.pixel);
+      /**
+       * Canvas may scale to make image sharper in high DPR devices. Therefore, when finding lines
+       * by mouse events, mouse pointer position should scale according to DPR ratio.
+       */
+      const lines = this.canvasLine.findByPosition({
+        x: event.pixel.x * this.dpr,
+        y: event.pixel.y * this.dpr,
+      });
 
       /**
        * Change cursor to pointer if mouse moves on at least one line.
