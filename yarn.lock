@@ -3,9 +3,9 @@
 
 
 "2drender@^1.1.0-alpha.1":
-  version "1.1.0-alpha.1"
-  resolved "https://registry.yarnpkg.com/2drender/-/2drender-1.1.0-alpha.1.tgz#275802485552ebaaa6ac31cae6d33d890d4b0ffa"
-  integrity sha512-sJxm+iUXxzAUEO3HUdNPPFII8ERxGhHPnDarUu/PsMaLmz5ExcRjrWS3D2+BA/PwLeWeULOpnqr8i1oXGsDpsg==
+  version "1.1.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/2drender/-/2drender-1.1.0-alpha.2.tgz#13e2847856a567ee3af91a92c9e230007a1fa867"
+  integrity sha512-fAzjyal7tS8ppBLkOEi5hDw9Br2yq3Njl0qrRtMb+oXD0+6Y+bcIrN0si5YGYKhKXcTQpXfHIMsOkNU0wjb/4A==
   dependencies:
     mathjs "^6.0.2"
     prop-types "^15.7.2"
@@ -3595,9 +3595,9 @@ map-visit@^1.0.0:
     object-visit "^1.0.0"
 
 mathjs@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/mathjs/-/mathjs-6.0.2.tgz#b6996898f3f0401bd4da4593164cc82e8ac3b014"
-  integrity sha512-K3Q0qoZx7iFz0PnFC0b4kIRZPBQq6rg4htRGnLU4o7SvBTNZnACaUrqqk6sQ891aa7maCDKp8PK1J8YyDAmw2g==
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/mathjs/-/mathjs-6.0.3.tgz#3d9e4a8ace012fa3c2078bb3ca1237374fa03136"
+  integrity sha512-BkXSjaWg0Dkwf6S3Cs7bLorei96ltYtCxNoTaLCZcH7OK+T+RgpobH86bTKD9oRI1hABXfuom/vf/RGI9CTfHA==
   dependencies:
     complex.js "2.0.11"
     decimal.js "10.2.0"
