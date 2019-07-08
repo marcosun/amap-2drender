@@ -169,7 +169,27 @@ class Grid {
    */
   handleClick(event) {
     if (this.onClick) {
-      const clickedGrids = this.canvasGrid.findByPosition(event.pixel);
+      /**
+       * Render properties passed to 2drender has already scaled by DPR.
+       * For high DPR devices, finding by position should scale accordingly.
+       */
+      const clickedGrids = this.canvasGrid.findByPosition({
+        x: event.pixel.x * this.dpr,
+        y: event.pixel.y * this.dpr,
+      }).map((grid) => {
+        /**
+         * Render properties passed to 2drender has already scaled by DPR.
+         * Supporting high DPR devices is an implementation detail, therefore, it should not be
+         * noticed by end users. Here I scale down those render properties which were used to
+         * draw high DPR images.
+         */
+        return {
+          ...grid,
+          height: grid.height / this.dpr,
+          origin: [grid.origin[0] / this.dpr, grid.origin[1] / this.dpr],
+          width: grid.width / this.dpr,
+        };
+      });
 
       if (clickedGrids.length !== 0) {
         this.onClick(event, clickedGrids);
@@ -186,7 +206,27 @@ class Grid {
      * or mouse out event is hooked.
      */
     if (typeof this.onMouseOver === 'function' || typeof this.onMouseOut === 'function') {
-      const grids = this.canvasGrid.findByPosition(event.pixel);
+      /**
+       * Render properties passed to 2drender has already scaled by DPR.
+       * For high DPR devices, finding by position should scale accordingly.
+       */
+      const grids = this.canvasGrid.findByPosition({
+        x: event.pixel.x * this.dpr,
+        y: event.pixel.y * this.dpr,
+      }).map((grid) => {
+        /**
+         * Render properties passed to 2drender has already scaled by DPR.
+         * Supporting high DPR devices is an implementation detail, therefore, it should not be
+         * noticed by end users. Here I scale down those render properties which were used to
+         * draw high DPR images.
+         */
+        return {
+          ...grid,
+          height: grid.height / this.dpr,
+          origin: [grid.origin[0] / this.dpr, grid.origin[1] / this.dpr],
+          width: grid.width / this.dpr,
+        };
+      });
 
       if (grids.length > this.hoverGrids.length) {
         /**
@@ -237,7 +277,27 @@ class Grid {
       || typeof this.onMouseOver === 'function'
       || typeof this.onMouseOut === 'function'
     ) {
-      const grids = this.canvasGrid.findByPosition(event.pixel);
+      /**
+       * Render properties passed to 2drender has already scaled by DPR.
+       * For high DPR devices, finding by position should scale accordingly.
+       */
+      const grids = this.canvasGrid.findByPosition({
+        x: event.pixel.x * this.dpr,
+        y: event.pixel.y * this.dpr,
+      }).map((grid) => {
+        /**
+         * Render properties passed to 2drender has already scaled by DPR.
+         * Supporting high DPR devices is an implementation detail, therefore, it should not be
+         * noticed by end users. Here I scale down those render properties which were used to
+         * draw high DPR images.
+         */
+        return {
+          ...grid,
+          height: grid.height / this.dpr,
+          origin: [grid.origin[0] / this.dpr, grid.origin[1] / this.dpr],
+          width: grid.width / this.dpr,
+        };
+      });
 
       /**
        * Change cursor to pointer if mouse moves on at least one grid.
