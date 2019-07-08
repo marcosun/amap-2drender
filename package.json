@@ -9,6 +9,7 @@
     "build:es": "cross-env NODE_ENV=production BABEL_ENV=es babel ./src/ -d ./build/es/",
     "build:es2015": "cross-env NODE_ENV=production babel ./src/ -d ./build/",
     "build:es2015modules": "cross-env NODE_ENV=production BABEL_ENV=modules babel ./src/index.js -o ./build/index.es.js",
+    "lint": "eslint src",
     "prebuild": "rimraf build",
     "preversion": "yarn test",
     "test": "jest --passWithNoTests",
@@ -47,5 +48,11 @@
     "roots": [
       "<rootDir>/src/"
     ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn run lint",
+      "pre-push": "yarn run lint"
+    }
   }
 }
