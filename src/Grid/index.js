@@ -60,7 +60,6 @@ class Grid {
      * Create canvas.
      */
     this.canvas = window.document.createElement('canvas');
-    this.ctx = this.canvas.getContext('2d');
     /**
      * Memorise properties that can be changed during lifetime.
      */
@@ -126,21 +125,15 @@ class Grid {
      * Memorise width and height so that we understand if width or height is updated in lifetime.
      * Change canvas size only if its shape changes.
      */
-    if (height * this.dpr !== this.canvas.height) {
-      /**
-       * For high DPR devices, canvas size is scaled by dpr value.
-       */
-      this.canvas.height = height * this.dpr;
+    if (height !== this.height) {
+      this.height = height;
       /**
        * Set CSS value to scale down by dpr value to make image sharp.
        */
       this.canvas.style.height = `${height}px`;
     }
-    if (width * this.dpr !== this.canvas.width) {
-      /**
-       * For high DPR devices, canvas size is scaled by dpr value.
-       */
-      this.canvas.width = width * this.dpr;
+    if (width !== this.width) {
+      this.width = width;
       /**
        * Set CSS value to scale down by dpr value to make image sharp.
        */
@@ -169,25 +162,12 @@ class Grid {
    */
   handleClick(event) {
     if (this.onClick) {
-      /**
-       * Render properties passed to 2drender has already scaled by DPR.
-       * For high DPR devices, finding by position should scale accordingly.
-       */
-      const clickedGrids = this.canvasGrid.findByPosition({
-        x: event.pixel.x * this.dpr,
-        y: event.pixel.y * this.dpr,
-      }).map((grid) => {
-        /**
-         * Render properties passed to 2drender has already scaled by DPR.
-         * Supporting high DPR devices is an implementation detail, therefore, it should not be
-         * noticed by end users. Here I scale down those render properties which were used to
-         * draw high DPR images.
-         */
+      const clickedGrids = this.canvasGrid.findByPosition(event.pixel).map((grid) => {
         return {
           ...grid,
-          height: grid.height / this.dpr,
-          origin: [grid.origin[0] / this.dpr, grid.origin[1] / this.dpr],
-          width: grid.width / this.dpr,
+          height: grid.height,
+          origin: [grid.origin[0], grid.origin[1]],
+          width: grid.width,
         };
       });
 
@@ -206,25 +186,12 @@ class Grid {
      * or mouse out event is hooked.
      */
     if (typeof this.onMouseOver === 'function' || typeof this.onMouseOut === 'function') {
-      /**
-       * Render properties passed to 2drender has already scaled by DPR.
-       * For high DPR devices, finding by position should scale accordingly.
-       */
-      const grids = this.canvasGrid.findByPosition({
-        x: event.pixel.x * this.dpr,
-        y: event.pixel.y * this.dpr,
-      }).map((grid) => {
-        /**
-         * Render properties passed to 2drender has already scaled by DPR.
-         * Supporting high DPR devices is an implementation detail, therefore, it should not be
-         * noticed by end users. Here I scale down those render properties which were used to
-         * draw high DPR images.
-         */
+      const grids = this.canvasGrid.findByPosition(event.pixel).map((grid) => {
         return {
           ...grid,
-          height: grid.height / this.dpr,
-          origin: [grid.origin[0] / this.dpr, grid.origin[1] / this.dpr],
-          width: grid.width / this.dpr,
+          height: grid.height,
+          origin: [grid.origin[0], grid.origin[1]],
+          width: grid.width,
         };
       });
 
@@ -277,25 +244,12 @@ class Grid {
       || typeof this.onMouseOver === 'function'
       || typeof this.onMouseOut === 'function'
     ) {
-      /**
-       * Render properties passed to 2drender has already scaled by DPR.
-       * For high DPR devices, finding by position should scale accordingly.
-       */
-      const grids = this.canvasGrid.findByPosition({
-        x: event.pixel.x * this.dpr,
-        y: event.pixel.y * this.dpr,
-      }).map((grid) => {
-        /**
-         * Render properties passed to 2drender has already scaled by DPR.
-         * Supporting high DPR devices is an implementation detail, therefore, it should not be
-         * noticed by end users. Here I scale down those render properties which were used to
-         * draw high DPR images.
-         */
+      const grids = this.canvasGrid.findByPosition(event.pixel).map((grid) => {
         return {
           ...grid,
-          height: grid.height / this.dpr,
-          origin: [grid.origin[0] / this.dpr, grid.origin[1] / this.dpr],
-          width: grid.width / this.dpr,
+          height: grid.height,
+          origin: [grid.origin[0], grid.origin[1]],
+          width: grid.width,
         };
       });
 
@@ -334,19 +288,8 @@ class Grid {
    * User should use render function rather than internal render.
    */
   internalRender() {
-    /**
-     * Clear canvas.
-     */
-    this.canvas.width = this.canvas.width;
-    /**
-     * 2K device has dpr 2. Canvas is painted on a double size area. With canvas CSS scales down
-     * by half shall we have sharp images.
-     * Change canvas width restores canvas scale. Always set the correct scale to fit current
-     * device.
-     */
-    this.ctx.scale(this.dpr, this.dpr);
     this.canvasGrid.config({
-      ctx: this.ctx,
+      canvas: this.canvas,
       /**
        * Everytime render function get called, canvas coordinates must get updated to reflect
        * changes.
@@ -367,18 +310,24 @@ class Grid {
           ...grid,
           /**
            * Get height and width from canvas coordinates.
-           * 2drender renders each grid on its own offscreen canvas before calling putImageData to
-           * copy that image to the main canvas. Due to the fact that putImageData is immutable to
-           * canvas scale, I have to manually scale grid size to make images sharper on high DPR
-           * devices.
-           * This is a bit odd because 2drender's implementation details affect the use case.
-           * Consider to implement a better method.
            */
-          height: (y1 - y0) * this.dpr,
-          origin: [x0 * this.dpr, y0 * this.dpr],
-          width: (x1 - x0) * this.dpr,
+          height: y1 - y0,
+          origin: [x0, y0],
+          width: x1 - x0,
         };
       }),
+      /**
+       * 2drender understands rendered images are displayed on high DPR devices.
+       */
+      dpr: this.dpr,
+      /**
+       * Canvas CSS width.
+       */
+      height: this.height,
+      /**
+       * Canvas CSS width.
+       */
+      width: this.width,
     });
     /**
      * Call canvas grid render function to draw grids.
