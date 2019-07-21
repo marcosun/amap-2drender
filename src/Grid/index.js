@@ -162,14 +162,7 @@ class Grid {
    */
   handleClick(event) {
     if (this.onClick) {
-      const clickedGrids = this.canvasGrid.findByPosition(event.pixel).map((grid) => {
-        return {
-          ...grid,
-          height: grid.height,
-          origin: [grid.origin[0], grid.origin[1]],
-          width: grid.width,
-        };
-      });
+      const clickedGrids = this.canvasGrid.findByPosition(event.pixel);
 
       if (clickedGrids.length !== 0) {
         this.onClick(event, clickedGrids);
@@ -186,14 +179,7 @@ class Grid {
      * or mouse out event is hooked.
      */
     if (typeof this.onMouseOver === 'function' || typeof this.onMouseOut === 'function') {
-      const grids = this.canvasGrid.findByPosition(event.pixel).map((grid) => {
-        return {
-          ...grid,
-          height: grid.height,
-          origin: [grid.origin[0], grid.origin[1]],
-          width: grid.width,
-        };
-      });
+      const grids = this.canvasGrid.findByPosition(event.pixel);
 
       if (grids.length > this.hoverGrids.length) {
         /**
@@ -244,14 +230,7 @@ class Grid {
       || typeof this.onMouseOver === 'function'
       || typeof this.onMouseOut === 'function'
     ) {
-      const grids = this.canvasGrid.findByPosition(event.pixel).map((grid) => {
-        return {
-          ...grid,
-          height: grid.height,
-          origin: [grid.origin[0], grid.origin[1]],
-          width: grid.width,
-        };
-      });
+      const grids = this.canvasGrid.findByPosition(event.pixel);
 
       /**
        * Change cursor to pointer if mouse moves on at least one grid.
