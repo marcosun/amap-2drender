@@ -329,6 +329,23 @@ Text.propTypes = {
    */
   data: PropTypes.arrayOf(PropTypes.shape({
     /**
+     * Anchor origin is a point where it will be placed to the given position.
+     * A common use case would be defining text top left point as anchor origin [0, -10].
+     * It has lower priority if both anchorOrigin and anchorOriginDescription are defined.
+     * i.e. [x, y]. Default text bottom left point: [0, 0].
+     */
+    anchorOrigin: PropTypes.arrayOf(PropTypes.number),
+    /**
+     * Anchor origin is a point where it will be placed to the given position.
+     * A common use case would be defining text top left point as anchor origin.
+     * It has higher priority if both anchorOrigin and anchorOriginDescription are defined.
+     * i.e. [x, y] Default bottom-left.
+     */
+    anchorOriginDescription: PropTypes.oneOf([
+      'bottom-center', 'bottom-left', 'bottom-right', 'center', 'middle-left', 'middle-right',
+      'top-center', 'top-left', 'top-right',
+    ]),
+    /**
      * Text colour.
      * Default black.
      */
