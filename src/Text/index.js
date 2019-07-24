@@ -179,7 +179,7 @@ class Text {
      * or mouse out event is hooked.
      */
     if (typeof this.onMouseOver === 'function' || typeof this.onMouseOut === 'function') {
-      const texts = this.canvasTexts.findByPosition(event.pixel);
+      const texts = this.canvasText.findByPosition(event.pixel);
 
       if (texts.length > this.hoverTexts.length) {
         /**
@@ -296,6 +296,10 @@ class Text {
           position,
         };
       }),
+      /**
+       * 2drender understands rendered images are displayed on high DPR devices.
+       */
+      dpr: this.dpr,
       /**
        * Canvas CSS height.
        */
