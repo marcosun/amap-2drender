@@ -62,6 +62,16 @@ class Line {
     this.dpr = getDPR();
 
     /**
+     * Save lines that pointer is hovering. Compare with previous hover lines to understand
+     * whether it is a mouse over or mouse out event.
+     */
+    this.hoverLines = [];
+    /**
+     * Its functionality is very similar to hoverLines, although it is used to determine
+     * cursor style.
+     */
+    this.hoverStyleLines = [];
+    /**
      * Map instance cannot be changed during lifetime, therefore, it is not memorised by config
      * function.
      */
@@ -126,16 +136,6 @@ class Line {
     this.onClick = onClick;
     this.onMouseOut = onMouseOut;
     this.onMouseOver = onMouseOver;
-    /**
-     * Save lines that pointer is hovering. Compare with previous hover lines to understand
-     * whether it is a mouse over or mouse out event.
-     */
-    this.hoverLines = [];
-    /**
-     * Its functionality is very similar to hoverLines, although it is used to determine
-     * cursor style.
-     */
-    this.hoverStyleLines = [];
     /**
      * Memorise width and height so that we understand if width or height is updated in lifetime.
      * Change canvas size only if its shape changes.
