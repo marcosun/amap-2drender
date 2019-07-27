@@ -48,6 +48,16 @@ class Marker {
     this.dpr = getDPR();
 
     /**
+     * Save markers that pointer is hovering. Compare with previous hover markers to understand
+     * whether it is a mouse over or mouse out event.
+     */
+    this.hoverMarkers = [];
+    /**
+     * Its functionality is very similar to hoverMarkers, although it is used to determine
+     * cursor style.
+     */
+    this.hoverStyleMarkers = [];
+    /**
      * Map instance cannot be changed during lifetime, therefore, it is not memorised by config
      * function.
      */
@@ -116,16 +126,6 @@ class Marker {
     this.onDoubleClick = onDoubleClick;
     this.onMouseOut = onMouseOut;
     this.onMouseOver = onMouseOver;
-    /**
-     * Save markers that pointer is hovering. Compare with previous hover markers to understand
-     * whether it is a mouse over or mouse out event.
-     */
-    this.hoverMarkers = [];
-    /**
-     * Its functionality is very similar to hoverMarkers, although it is used to determine
-     * cursor style.
-     */
-    this.hoverStyleMarkers = [];
     /**
      * Memorise width and height so that we understand if width or height is updated in lifetime.
      * Change canvas size only if its shape changes.
