@@ -47,6 +47,16 @@ class Grid {
     this.dpr = getDPR();
 
     /**
+     * Save grids that pointer is hovering. Compare with previous hover grids to understand
+     * whether it is a mouse over or mouse out event.
+     */
+    this.hoverGrids = [];
+    /**
+     * Its functionality is very similar to hoverGrids, although it is used to determine
+     * cursor style.
+     */
+    this.hoverStyleGrids = [];
+    /**
      * Map instance cannot be changed during lifetime, therefore, it is not memorised by config
      * function.
      */
@@ -111,16 +121,6 @@ class Grid {
     this.onClick = onClick;
     this.onMouseOut = onMouseOut;
     this.onMouseOver = onMouseOver;
-    /**
-     * Save grids that pointer is hovering. Compare with previous hover grids to understand
-     * whether it is a mouse over or mouse out event.
-     */
-    this.hoverGrids = [];
-    /**
-     * Its functionality is very similar to hoverGrids, although it is used to determine
-     * cursor style.
-     */
-    this.hoverStyleGrids = [];
     /**
      * Memorise width and height so that we understand if width or height is updated in lifetime.
      * Change canvas size only if its shape changes.
