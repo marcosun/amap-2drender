@@ -317,6 +317,10 @@ class Marker {
         };
       }),
       /**
+       * 2drender understands rendered images are displayed on high DPR devices.
+       */
+      dpr: this.dpr,
+      /**
        * Canvas CSS height.
        */
       height: this.height,
