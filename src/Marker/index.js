@@ -72,6 +72,19 @@ class Marker {
      * Create canvas.
      */
     this.canvas = window.document.createElement('canvas');
+    this.ctx = this.canvas.getContext('2d');
+    /**
+     * A Daemon is a programme that runs as a background process, rather than being under the direct
+     * control of an interactive user.
+     * With underlying Marker, hundreds of thousands of UI elements are rendered asynchronously by
+     * taking advantage of CPU idle time. This beautiful animation is attractive for the initial
+     * render. However, all following re-renders, such as dragging, UI elements position changing,
+     * and more, breaks logical links with the previous state with this animation.
+     * Keeping visible canvas untouched, while rendering UI elements at background and display
+     * daemon canvas as soon as it completes prevents unnecessary UI elements flash.
+     */
+    this.daemonCanvas = document.createElement('canvas');
+    this.daemonCtx = this.daemonCanvas.getContext('2d');
     /**
      * Memorise properties that can be changed during lifetime.
      */
@@ -285,9 +298,9 @@ class Marker {
    * This internal render function is expected to be called internally only.
    * User should use render function rather than internal render.
    */
-  internalRender() {
+  async internalRender() {
     this.canvasMarker.config({
-      canvas: this.canvas,
+      canvas: this.daemonCanvas,
       /**
        * Everytime render function get called, canvas coordinates must get updated to reflect
        * changes.
@@ -332,7 +345,14 @@ class Marker {
     /**
      * Call canvas marker render function to draw grids.
      */
-    this.canvasMarker.render();
+    await this.canvasMarker.render();
+
+    /**
+     * Replace visible canvas with completed canvas to prevent UI elements flash.
+     */
+    this.canvas.width = this.daemonCanvas.width;
+    this.canvas.height = this.daemonCanvas.height;
+    this.ctx.drawImage(this.daemonCanvas, 0, 0);
   }
 
   /**
