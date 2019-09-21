@@ -3,6 +3,7 @@ import { isEqual } from 'lodash';
 import { Marker as CanvasMarker } from '2drender';
 import getDPR from '../utils/getDPR';
 import isNullVoid from '../utils/isNullVoid';
+import moveCanvas from '../utils/moveCanvas';
 
 class Marker {
   /**
@@ -79,8 +80,8 @@ class Marker {
      * With underlying Marker, hundreds of thousands of UI elements are rendered asynchronously by
      * taking advantage of CPU idle time. This beautiful animation is attractive for the initial
      * render. However, all following re-renders, such as dragging, UI elements position changing,
-     * and more, breaks logical links with the previous state with this animation.
-     * Keeping visible canvas untouched, while rendering UI elements at background and display
+     * and etc, breaks logical links with the previous state with this animation.
+     * Keeping visible canvas frozen, while rendering UI elements at background and display
      * daemon canvas as soon as it completes prevents unnecessary UI elements flash.
      */
     this.daemonCanvas = document.createElement('canvas');
@@ -299,8 +300,53 @@ class Marker {
    * User should use render function rather than internal render.
    */
   async internalRender() {
+    function getPreviousCenterAndZoom() {
+      return {
+        previousCenter: this.previousCenter,
+        previousZoom: this.previousZoom,
+      };
+    }
+
+    function getNextCenterAndZoom() {
+      const nextCenter = this.map.getCenter();
+      const nextZoom = this.map.getZoom();
+
+      return {
+        nextCenter,
+        nextZoom,
+      };
+    }
+
+    function memorisePreviousCenterAndZoom() {
+      this.previousCenter = this.map.getCenter();
+      this.previousZoom = this.map.getZoom();
+    }
+
+    let canvas = this.canvas;
+    /**
+     * Keeping visible canvas frozen, while rendering UI elements at background and display
+     * daemon canvas as soon as it completes prevents unnecessary UI elements flash.
+     * This happens only after map drag. Zoom change does not use daemon canvas.
+     */
+    const { nextCenter, nextZoom } = getNextCenterAndZoom();
+    const { previousCenter, previousZoom } = getPreviousCenterAndZoom();
+    if (nextZoom === previousZoom) {
+      canvas = this.daemonCanvas;
+      /**
+       * Map drag difference in pixel.
+       */
+      const deltaX = this.map.lngLatToContainer(nextCenter).getX() -
+        this.map.lngLatToContainer(previousCenter).getX();
+      const deltaY = this.map.lngLatToContainer(nextCenter).getY() -
+        this.map.lngLatToContainer(previousCenter).getY();
+      /**
+       * Move visible canvas horizontally and vertically.
+       */
+      moveCanvas(this.canvas, -deltaX, -deltaY);
+    }
+
     this.canvasMarker.config({
-      canvas: this.daemonCanvas,
+      canvas,
       /**
        * Everytime render function get called, canvas coordinates must get updated to reflect
        * changes.
@@ -350,9 +396,13 @@ class Marker {
     /**
      * Replace visible canvas with completed canvas to prevent UI elements flash.
      */
-    this.canvas.width = this.daemonCanvas.width;
-    this.canvas.height = this.daemonCanvas.height;
-    this.ctx.drawImage(this.daemonCanvas, 0, 0);
+    if (nextZoom === previousZoom) {
+      this.canvas.width = this.daemonCanvas.width;
+      this.canvas.height = this.daemonCanvas.height;
+      this.ctx.drawImage(this.daemonCanvas, 0, 0);
+    }
+
+    memorisePreviousCenterAndZoom();
   }
 
   /**
