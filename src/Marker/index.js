@@ -329,14 +329,14 @@ class Marker {
    * User should use render function rather than internal render.
    */
   async internalRender() {
-    function getPreviousCenterAndZoom() {
+    const getPreviousCenterAndZoom = () => {
       return {
         previousCenter: this.previousCenter,
         previousZoom: this.previousZoom,
       };
-    }
+    };
 
-    function getNextCenterAndZoom() {
+    const getNextCenterAndZoom = () => {
       const nextCenter = this.map.getCenter();
       const nextZoom = this.map.getZoom();
 
@@ -344,12 +344,12 @@ class Marker {
         nextCenter,
         nextZoom,
       };
-    }
+    };
 
-    function memorisePreviousCenterAndZoom() {
+    const memorisePreviousCenterAndZoom = () => {
       this.previousCenter = this.map.getCenter();
       this.previousZoom = this.map.getZoom();
-    }
+    };
 
     /**
      * Do not render canvas if map is dragging.
