@@ -85,7 +85,6 @@ class Marker {
      * daemon canvas as soon as it completes prevents unnecessary UI elements flash.
      */
     this.daemonCanvas = document.createElement('canvas');
-    this.daemonCtx = this.daemonCanvas.getContext('2d');
     /**
      * Memorise properties that can be changed during lifetime.
      */
