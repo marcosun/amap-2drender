@@ -70,6 +70,20 @@ class Marker {
     this.map.on('dblclick', this.handleDoubleClick, this);
     this.map.on('mousemove', this.handleMouseMove, this);
     /**
+     * Do not render canvas if map is dragging.
+     */
+    this.map.on('dragend', this.handleDragEnd, this);
+    this.map.on('dragstart', this.handleDragStart, this);
+    this.map.on('touchend', this.handleDragEnd, this);
+    this.map.on('touchstart', this.handleDragStart, this);
+    // this.map.on('moveend', this.handleDragEnd, this);
+
+    /**
+     * Do not render canvas if map is dragging.
+     */
+    this.isDragging = false;
+
+    /**
      * Create canvas.
      */
     this.canvas = window.document.createElement('canvas');
@@ -173,7 +187,12 @@ class Marker {
      */
     this.map.off('click', this.handleClick, this);
     this.map.off('dblclick', this.handleDoubleClick, this);
+    this.map.off('dragend', this.handleDragEnd, this);
+    this.map.off('dragstart', this.handleDragStart, this);
     this.map.off('mousemove', this.handleMouseMove, this);
+    this.map.off('touchend', this.handleDragEnd, this);
+    this.map.off('touchstart', this.handleDragStart, this);
+    // this.map.off('moveend', this.handleDragEnd, this);
   }
 
   /**
@@ -200,6 +219,17 @@ class Marker {
         this.onDoubleClick(event, clickedMarkers);
       }
     }
+  }
+
+  handleDragEnd() {
+    this.isDragging = false;
+  }
+
+  /**
+   * Do not render canvas if map is dragging.
+   */
+  handleDragStart() {
+    this.isDragging = true;
   }
 
   /**
@@ -320,6 +350,11 @@ class Marker {
       this.previousCenter = this.map.getCenter();
       this.previousZoom = this.map.getZoom();
     }
+
+    /**
+     * Do not render canvas if map is dragging.
+     */
+    if (this.isDragging) return;
 
     let canvas = this.canvas;
     /**
