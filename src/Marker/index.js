@@ -76,7 +76,6 @@ class Marker {
     this.map.on('dragstart', this.handleDragStart, this);
     this.map.on('touchend', this.handleDragEnd, this);
     this.map.on('touchstart', this.handleDragStart, this);
-    // this.map.on('moveend', this.handleDragEnd, this);
 
     /**
      * Do not render canvas if map is dragging.
@@ -192,7 +191,6 @@ class Marker {
     this.map.off('mousemove', this.handleMouseMove, this);
     this.map.off('touchend', this.handleDragEnd, this);
     this.map.off('touchstart', this.handleDragStart, this);
-    // this.map.off('moveend', this.handleDragEnd, this);
   }
 
   /**

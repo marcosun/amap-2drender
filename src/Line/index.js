@@ -3,6 +3,7 @@ import { isEqual } from 'lodash';
 import { Line as CanvasLine } from '2drender';
 import getDPR from '../utils/getDPR';
 import isNullVoid from '../utils/isNullVoid';
+import moveCanvas from '../utils/moveCanvas';
 
 class Line {
   /**
@@ -82,9 +83,34 @@ class Line {
     this.map.on('click', this.handleClick, this);
     this.map.on('mousemove', this.handleMouseMove, this);
     /**
+     * Do not render canvas if map is dragging.
+     */
+    this.map.on('dragend', this.handleDragEnd, this);
+    this.map.on('dragstart', this.handleDragStart, this);
+    this.map.on('touchend', this.handleDragEnd, this);
+    this.map.on('touchstart', this.handleDragStart, this);
+
+    /**
+     * Do not render canvas if map is dragging.
+     */
+    this.isDragging = false;
+
+    /**
      * Create canvas.
      */
     this.canvas = window.document.createElement('canvas');
+    this.ctx = this.canvas.getContext('2d');
+    /**
+     * A Daemon is a programme that runs as a background process, rather than being under the direct
+     * control of an interactive user.
+     * With underlying Marker, hundreds of thousands of UI elements are rendered asynchronously by
+     * taking advantage of CPU idle time. This beautiful animation is attractive for the initial
+     * render. However, all following re-renders, such as dragging, UI elements position changing,
+     * and etc, breaks logical links with the previous state with this animation.
+     * Keeping visible canvas frozen, while rendering UI elements at background and display
+     * daemon canvas as soon as it completes prevents unnecessary UI elements flash.
+     */
+    this.daemonCanvas = document.createElement('canvas');
     /**
      * Memorise properties that can be changed during lifetime.
      */
@@ -169,7 +195,11 @@ class Line {
      * https://github.com/marcosun/amap-2drender/issues/1
      */
     this.map.off('click', this.handleClick, this);
+    this.map.off('dragend', this.handleDragEnd, this);
+    this.map.off('dragstart', this.handleDragStart, this);
     this.map.off('mousemove', this.handleMouseMove, this);
+    this.map.off('touchend', this.handleDragEnd, this);
+    this.map.off('touchstart', this.handleDragStart, this);
   }
 
   /**
@@ -183,6 +213,17 @@ class Line {
         this.onClick(event, clickedLines);
       }
     }
+  }
+
+  handleDragEnd() {
+    this.isDragging = false;
+  }
+
+  /**
+   * Do not render canvas if map is dragging.
+   */
+  handleDragStart() {
+    this.isDragging = true;
   }
 
   /**
@@ -281,9 +322,59 @@ class Line {
    * This internal render function is expected to be called internally only.
    * User should use render function rather than internal render.
    */
-  internalRender() {
+  async internalRender() {
+    const getPreviousCenterAndZoom = () => {
+      return {
+        previousCenter: this.previousCenter,
+        previousZoom: this.previousZoom,
+      };
+    };
+
+    const getNextCenterAndZoom = () => {
+      const nextCenter = this.map.getCenter();
+      const nextZoom = this.map.getZoom();
+
+      return {
+        nextCenter,
+        nextZoom,
+      };
+    };
+
+    const memorisePreviousCenterAndZoom = () => {
+      this.previousCenter = this.map.getCenter();
+      this.previousZoom = this.map.getZoom();
+    };
+
+    /**
+     * Do not render canvas if map is dragging.
+     */
+    if (this.isDragging) return;
+
+    let canvas = this.canvas;
+    /**
+     * Keeping visible canvas frozen, while rendering UI elements at background and display
+     * daemon canvas as soon as it completes prevents unnecessary UI elements flash.
+     * This happens only after map drag. Zoom change does not use daemon canvas.
+     */
+    const { nextCenter, nextZoom } = getNextCenterAndZoom();
+    const { previousCenter, previousZoom } = getPreviousCenterAndZoom();
+    if (nextZoom === previousZoom) {
+      canvas = this.daemonCanvas;
+      /**
+       * Map drag difference in pixel.
+       */
+      const deltaX = this.map.lngLatToContainer(nextCenter).getX() -
+        this.map.lngLatToContainer(previousCenter).getX();
+      const deltaY = this.map.lngLatToContainer(nextCenter).getY() -
+        this.map.lngLatToContainer(previousCenter).getY();
+      /**
+       * Move visible canvas horizontally and vertically.
+       */
+      moveCanvas(this.canvas, -deltaX, -deltaY);
+    }
+
     this.canvasLine.config({
-      canvas: this.canvas,
+      canvas,
       data: this.data,
       /**
        * 2drender understands rendered images are displayed on high DPR devices.
@@ -309,7 +400,18 @@ class Line {
     /**
      * Call canvas line render function to draw polylines.
      */
-    this.canvasLine.render();
+    await this.canvasLine.render();
+
+    /**
+     * Replace visible canvas with completed canvas to prevent UI elements flash.
+     */
+    if (nextZoom === previousZoom) {
+      this.canvas.width = this.daemonCanvas.width;
+      this.canvas.height = this.daemonCanvas.height;
+      this.ctx.drawImage(this.daemonCanvas, 0, 0);
+    }
+
+    memorisePreviousCenterAndZoom();
   }
 
   /**
