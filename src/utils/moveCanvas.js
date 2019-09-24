@@ -3,7 +3,12 @@ import copyCanvas from './copyCanvas';
 /**
  * Move canvas horizontally and vertically.
  */
-export default function moveCanvas(sourceCanvas, deltaX, deltaY) {
+export default function moveCanvas({
+  canvas: sourceCanvas,
+  deltaX,
+  deltaY,
+  dpr = 1,
+}) {
   const sourceCtx = sourceCanvas.getContext('2d');
   /**
    * Create a copy of source canvas.
@@ -15,8 +20,9 @@ export default function moveCanvas(sourceCanvas, deltaX, deltaY) {
   sourceCanvas.width = sourceCanvas.width;
   /**
    * On an empty canvas, draw transformed canvas image.
+   * Moving distance should reflect device pixel ratio.
    */
-  sourceCtx.drawImage(tmpCanvas, deltaX, deltaY);
+  sourceCtx.drawImage(tmpCanvas, deltaX * dpr, deltaY * dpr);
 
   return sourceCanvas;
 }

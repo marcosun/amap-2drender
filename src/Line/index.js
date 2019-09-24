@@ -370,7 +370,12 @@ class Line {
       /**
        * Move visible canvas horizontally and vertically.
        */
-      moveCanvas(this.canvas, -deltaX, -deltaY);
+      moveCanvas({
+        canvas: this.canvas,
+        deltaX: -deltaX,
+        deltaY: -deltaY,
+        dpr: this.dpr,
+      });
     }
 
     this.canvasLine.config({
