@@ -382,6 +382,12 @@ class Marker {
       });
     }
 
+    /**
+     * When rendering at background, user could drag map. Visible canvas should move the previously
+     * moved canvas, rather than background canvas.
+     */
+    memorisePreviousCenterAndZoom();
+
     this.canvasMarker.config({
       canvas,
       /**
@@ -438,8 +444,6 @@ class Marker {
       this.canvas.height = this.daemonCanvas.height;
       this.ctx.drawImage(this.daemonCanvas, 0, 0);
     }
-
-    memorisePreviousCenterAndZoom();
   }
 
   /**

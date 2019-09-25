@@ -378,6 +378,12 @@ class Line {
       });
     }
 
+    /**
+     * When rendering at background, user could drag map. Visible canvas should move the previously
+     * moved canvas, rather than background canvas.
+     */
+    memorisePreviousCenterAndZoom();
+
     this.canvasLine.config({
       canvas,
       data: this.data,
@@ -415,8 +421,6 @@ class Line {
       this.canvas.height = this.daemonCanvas.height;
       this.ctx.drawImage(this.daemonCanvas, 0, 0);
     }
-
-    memorisePreviousCenterAndZoom();
   }
 
   /**
