@@ -3,9 +3,9 @@
 
 
 "2drender@^1.1.0-alpha.1":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/2drender/-/2drender-1.1.0.tgz#2b814e1e03e61fdd6f33e91380ee5b57c7bdfd74"
-  integrity sha512-LIsvIJwwUKk1jDPHDYcC0fxjN8XZ42dkPlnCZM/i3Dt59TOAV/Jo5uIVa/Ox/TDaaBxXjVU8WIanEoPAUQgmJA==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/2drender/-/2drender-1.2.0.tgz#9ade601543f0c166fee5bedcc8cf40c793ae1d92"
+  integrity sha512-KJAIxb6kgeJ1vNMwztiXiZgphYBICyRq9DQY1q99EaFtUK36gFZT0reGx0iOvt1Q3EEm2U4SE5Ov0EeqeHciNA==
   dependencies:
     common-tags "^1.8.0"
     mathjs "^6.0.2"
@@ -3601,9 +3601,9 @@ map-visit@^1.0.0:
     object-visit "^1.0.0"
 
 mathjs@^6.0.2:
-  version "6.0.3"
-  resolved "https://registry.yarnpkg.com/mathjs/-/mathjs-6.0.3.tgz#3d9e4a8ace012fa3c2078bb3ca1237374fa03136"
-  integrity sha512-BkXSjaWg0Dkwf6S3Cs7bLorei96ltYtCxNoTaLCZcH7OK+T+RgpobH86bTKD9oRI1hABXfuom/vf/RGI9CTfHA==
+  version "6.2.2"
+  resolved "https://registry.yarnpkg.com/mathjs/-/mathjs-6.2.2.tgz#353012b40e155521a2bbf78d0aac750d4289eb9b"
+  integrity sha512-l0qw0meh1rcGaFMh248wx6NE5RVWA2bleq+5xF44XAaPMHcou+cKq/0ASBnTDsp0zNAbUYm7tGkDEe6QHbzU8g==
   dependencies:
     complex.js "2.0.11"
     decimal.js "10.2.0"
@@ -3612,7 +3612,7 @@ mathjs@^6.0.2:
     javascript-natural-sort "0.7.1"
     seed-random "2.2.0"
     tiny-emitter "2.1.0"
-    typed-function "1.1.0"
+    typed-function "1.1.1"
 
 mem@^4.0.0:
   version "4.3.0"
@@ -5249,10 +5249,10 @@ type-fest@^0.4.1:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.4.1.tgz#8bdf77743385d8a4f13ba95f610f5ccd68c728f8"
   integrity sha512-IwzA/LSfD2vC1/YDYMv/zHP4rDF1usCwllsDpbolT3D4fUepIO7f9K70jjmUewU/LmGUKJcwcVtDCpnKk4BPMw==
 
-typed-function@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/typed-function/-/typed-function-1.1.0.tgz#ea149706e0fb42aca1791c053a6d94ccd6c4fdcb"
-  integrity sha512-TuQzwiT4DDg19beHam3E66oRXhyqlyfgjHB/5fcvsRXbfmWPJfto9B4a0TBdTrQAPGlGmXh/k7iUI+WsObgORA==
+typed-function@1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/typed-function/-/typed-function-1.1.1.tgz#a1316187ec3628c9e219b91ca96918660a10138e"
+  integrity sha512-RbN7MaTQBZLJYzDENHPA0nUmWT0Ex80KHItprrgbTPufYhIlTePvCXZxyQK7wgn19FW5bnuaBIKcBb5mRWjB1Q==
 
 uglify-js@^3.1.4:
   version "3.6.0"
