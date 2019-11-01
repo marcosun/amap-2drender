@@ -1,6 +1,6 @@
 {
   "name": "amap-2drender",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Draw UI components on AMap with 2drender.",
   "main": "src/index.js",
   "scripts": {
