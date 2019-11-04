@@ -445,20 +445,22 @@ Grid.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
     /**
      * Grid border colour.
+     * Default black.
      */
     borderColor: PropTypes.string,
     /**
      * Grid bottom right corner lng lat coordinates.
      */
-    bottomRight: PropTypes.arrayOf(PropTypes.number),
+    bottomRight: PropTypes.arrayOf(PropTypes.number).isRequired,
     /**
      * Grid fill colour.
+     * Default black.
      */
-    color: PropTypes.string.isRequired,
+    color: PropTypes.string,
     /**
      * Grid top left corner lng lat coordinates.
      */
-    topLeft: PropTypes.arrayOf(PropTypes.number),
+    topLeft: PropTypes.arrayOf(PropTypes.number).isRequired,
   })),
   /**
    * Canvas height.

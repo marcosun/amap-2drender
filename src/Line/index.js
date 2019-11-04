@@ -442,9 +442,9 @@ Line.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
     /**
      * Line fill colour.
-     * Default transparent.
+     * Default black.
      */
-    color: PropTypes.string.isRequired,
+    color: PropTypes.string,
     /**
      * Line path. Supports line string. i.e. [[lng, lat], [lng, lat], [lng, lat]] or
      * [{lng, lat}, {lng, lat}, {lng, lat}]
@@ -458,6 +458,7 @@ Line.propTypes = {
     ])).isRequired,
     /**
      * Line width.
+     * Default 1.
      */
     width: PropTypes.number,
   })),

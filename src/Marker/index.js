@@ -465,7 +465,7 @@ Marker.propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
     /**
      * Anchor origin is a point where it will be placed to the given position.
-     * A common use case would be defining marker centre point as anchor origin .
+     * A common use case would be defining marker centre point as anchor origin.
      * i.e. [x, y] Default [0, 0].
      */
     anchorOrigin: PropTypes.arrayOf(PropTypes.number),
@@ -474,9 +474,9 @@ Marker.propTypes = {
      */
     height: PropTypes.number.isRequired,
     /**
-     * Marker icon is whatever can be consumed by Image class, such as base64.
+     * Marker icon is whatever can be consumed by Image class.
      */
-    icon: PropTypes.any,
+    icon: PropTypes.any.isRequired,
     /**
      * Marker lng lat location. i.e. [lng, lat].
      * Marker position is derived from location.
