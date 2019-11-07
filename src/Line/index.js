@@ -396,7 +396,7 @@ class Line {
        * changes.
        * When dataset is large, it takes a considerable time to transform lng lat coordinates to
        * canvas coordinates. getSnapshotBeforeRender takes advantage of none UI blocking skills
-       * by invoking transformation function only before a single line is about to render.
+       * by invoking transformation function only before each line renders.
        */
       getSnapshotBeforeRender: Line.getSnapshotBeforeRender(this.map),
       /**
