@@ -25,6 +25,36 @@ class Marker {
     return [x, y];
   }
 
+  /**
+   * Transform lng lat coordinates to canvas coordinates.
+   */
+  static getSnapshotBeforeRender(map) {
+    return (marker) => {
+      const { location } = marker;
+      let { position } = marker;
+
+      /**
+       * Position has higher priority over location. If position is not defined, position is
+       * derived from location.
+       */
+      if (!position) {
+        /**
+         * Transform lng lat coordinates to canvas coordinates.
+         */
+        position = Marker.coordinateTransformation(map, location);
+      }
+
+      return {
+        /**
+         * Pass all other properties to canvasMarker. This entire object will be returned when
+         * calling findByPosition function.
+         */
+        ...marker,
+        position,
+      };
+    };
+  }
+
   constructor(props) {
     const {
       data = [],
@@ -390,38 +420,19 @@ class Marker {
 
     this.canvasMarker.config({
       canvas,
-      /**
-       * Everytime render function get called, canvas coordinates must get updated to reflect
-       * changes.
-       */
-      data: this.data.map((marker) => {
-        const { location } = marker;
-        let { position } = marker;
-
-        /**
-         * Position has higher priority over location. If position is not defined, position is
-         * derived from location.
-         */
-        if (!position) {
-          /**
-           * Transform lng lat coordinates to canvas coordinates.
-           */
-          position = Marker.coordinateTransformation(this.map, location);
-        }
-
-        return {
-          /**
-           * Pass all other properties to canvasMarker. This entire object will be returned when
-           * calling findByPosition function.
-           */
-          ...marker,
-          position,
-        };
-      }),
+      data: this.data,
       /**
        * 2drender understands rendered images are displayed on high DPR devices.
        */
       dpr: this.dpr,
+      /**
+       * Everytime render function get called, canvas coordinates must get updated to reflect
+       * changes.
+       * When dataset is large, it takes a considerable time to transform lng lat coordinates to
+       * canvas coordinates. getSnapshotBeforeRender takes advantage of none UI blocking skills
+       * by invoking transformation function only before each marker renders.
+       */
+      getSnapshotBeforeRender: Marker.getSnapshotBeforeRender(this.map),
       /**
        * Canvas CSS height.
        */
